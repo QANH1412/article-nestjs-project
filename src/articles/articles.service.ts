@@ -4,12 +4,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { Article } from './interfaces/article.interface';
+import { Article } from './schemas/article.schema';
 
 @Injectable()
 export class ArticlesService {
   constructor(
-    @InjectModel('Article') private readonly articleModel: Model<Article>,
+    @InjectModel(Article.name) private readonly articleModel: Model<Article>,
   ) {}
 
   async create(createArticleDto: CreateArticleDto): Promise<Article> {
@@ -21,7 +21,6 @@ export class ArticlesService {
     const query = search ? { title: new RegExp(search, 'i') } : {};
     return this.articleModel.find(query).exec();
   }
-  
 
   async findOne(id: string): Promise<Article> {
     const article = await this.articleModel.findById(id).exec();
@@ -37,5 +36,13 @@ export class ArticlesService {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
     return updatedArticle;
+  }
+
+  async remove(id: string): Promise<Article> {
+    const deletedArticle = await this.articleModel.findByIdAndDelete(id).exec();
+    if (!deletedArticle) {
+      throw new NotFoundException(`Article with ID ${id} not found`);
+    }
+    return deletedArticle;
   }
 }
