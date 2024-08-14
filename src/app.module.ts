@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
-import { ArticlesModule } from './articles/articles.module';
+import { ConfigModule } from './config/config.module';  // Import ConfigModule tùy chỉnh
+import { ConfigService } from './config/config.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
+import { ArticlesModule } from './articles/articles.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
-    }), // Đọc và cấu hình biến môi trường từ file .env
-    MongooseModule.forRoot(process.env.MONGODB_URI, { 
-      autoIndex: true
+    ConfigModule,  
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.mongodbUri,
+      }),
+      inject: [ConfigService],
     }),
-    ProfileModule,
-    AuthModule,
-    ArticlesModule,
     UsersModule,
+    AuthModule,
+    ProfileModule,
+    ArticlesModule,
   ],
 })
 export class AppModule {}
