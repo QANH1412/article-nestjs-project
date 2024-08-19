@@ -1,15 +1,14 @@
 // src/profile/profile.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from '../users/schemas/user.schema';
+import { UsersService } from '../users/users.service'; // Import UserService
+import { User } from '../users/schemas/user.schema';
 
 @Injectable()
 export class ProfileService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
+  constructor(private readonly usersService: UsersService) {}
 
   async findById(id: string): Promise<User> {
-    const user = await this.userModel.findById(id).exec();
+    const user = await this.usersService.findById(id); // Sử dụng findById từ UserService
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
