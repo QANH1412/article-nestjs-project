@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { ArticlesModule } from './articles/articles.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ArticlesModule } from './articles/articles.module';
       }),
       inject: [ConfigService],
     }),
+    RedisModule,
     UsersModule,
     AuthModule,
     ProfileModule,

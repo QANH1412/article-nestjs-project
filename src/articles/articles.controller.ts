@@ -3,7 +3,7 @@ import { Controller, Get, Post, Body, Param, Put, Query, UseGuards } from '@nest
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../token/jwt-auth.guard';
 
 @Controller('articles')
 export class ArticlesController {

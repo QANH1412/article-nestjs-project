@@ -3,7 +3,7 @@ import { Controller, Post, Body, Put, Param, Get, UseGuards } from '@nestjs/comm
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../token/jwt-auth.guard';
 import { use } from 'passport';
 import { User } from './schemas/user.schema';
 

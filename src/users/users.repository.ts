@@ -29,7 +29,7 @@ export class UsersRepository implements IUserRepository {
   }
 
 
-  async update(email: string, userData: Partial<UpdateUserDto>): Promise<User | null> {
-    return this.userModel.findByIdAndUpdate(email, userData, { new: true }).exec();
+  async update(email: string, updateFields: Partial<User>): Promise<User | null> {
+    return this.userModel.findOneAndUpdate({ email }, updateFields).exec(); 
   }
 }
