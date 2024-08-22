@@ -17,7 +17,7 @@ export class UserActivityMiddleware implements NestMiddleware {
     
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+
   async use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
