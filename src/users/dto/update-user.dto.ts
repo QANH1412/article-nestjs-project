@@ -43,6 +43,9 @@ export class UpdateUserDto {
   @IsOptional()
   readonly isEmailVerified?: boolean;
 
+  @IsOptional()
+  lastActivity?: Date;
+  
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ResetPasswordTokenDto)

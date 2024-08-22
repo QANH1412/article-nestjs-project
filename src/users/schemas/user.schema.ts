@@ -35,6 +35,9 @@ export class User {
   @Prop({ default: false })
   isEmailVerified: boolean;
 
+  @Prop({ type: Date, default: Date.now })
+  lastActivity: Date; // Thêm trường theo dõi thời gian hoạt động
+
   @Prop({
     type: [
       {

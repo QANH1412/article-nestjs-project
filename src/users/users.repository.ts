@@ -28,6 +28,12 @@ export class UsersRepository implements IUserRepository {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async updateLastActivity(username: string): Promise<void> {
+    await this.userModel.updateOne(
+      { username },
+      { $set: { lastActivity: new Date() } },
+    ).exec();
+  }
 
   async update(email: string, updateFields: Partial<User>): Promise<User | null> {
     return this.userModel.findOneAndUpdate({ email }, updateFields).exec(); 

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from './config/config.module';  // Import ConfigModule tùy chỉnh
 import { ConfigService } from './config/config.service';
@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { ArticlesModule } from './articles/articles.module';
 import { RedisModule } from './redis/redis.module';
+import { TokenModule } from './token/token.module';
+import { UserActivityMiddleware } from './common/middleware/user-activity.middleware';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { RedisModule } from './redis/redis.module';
       }),
       inject: [ConfigService],
     }),
+    TokenModule,
     RedisModule,
     UsersModule,
     AuthModule,
@@ -25,4 +28,10 @@ import { RedisModule } from './redis/redis.module';
     ArticlesModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserActivityMiddleware)
+      .forRoutes('*'); // Áp dụng middleware cho tất cả các routes
+  }
+}

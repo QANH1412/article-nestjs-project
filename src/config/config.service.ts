@@ -8,4 +8,12 @@ export class ConfigService {
   get mongodbUri(): string {
     return this.configService.get<string>('MONGODB_URI');
   }
+
+  get jwtSecret(): string {
+    return this.configService.get<string>('JWT_SECRET');
+  }
+
+  get jwtRefreshSecret(): string {
+    return this.configService.get<string>('JWT_REFRESH_SECRET');
+  }
 }

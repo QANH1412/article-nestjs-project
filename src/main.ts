@@ -28,7 +28,16 @@ async function bootstrap() {
   );
 
   // // Cấu hình CSRF middleware
-  // app.use(csurf({ cookie: true }));
+  // app.use(
+  //   csurf({
+  //     cookie: {
+  //       httpOnly: true, // Đảm bảo cookie chỉ có thể truy cập qua HTTP
+  //       secure: false, // Chỉ sử dụng cookie bảo mật trên production
+  //     },
+  //   }),
+  // );
+
+  
   
   // Cấu hình CORS để bảo vệ ứng dụng khỏi các yêu cầu từ các origin không mong muốn
   app.enableCors({

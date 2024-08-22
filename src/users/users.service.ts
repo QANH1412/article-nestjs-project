@@ -35,6 +35,10 @@ export class UsersService {
     return updatedUser;
   }
 
+  async updateLastActivity(username: string): Promise<void> {
+    await this.userRepository.updateLastActivity(username);
+  }
+
   async updateVerifyEmail(email: string, isEmailVerified: boolean): Promise<User> {
     const updatedUser = await this.userRepository.update(email, { isEmailVerified });
     if (!updatedUser) {

@@ -1,4 +1,4 @@
-// auth.controller.ts
+// auth.controller.ts 
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -14,10 +14,6 @@ export class AuthController {
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  // @Get('/csrf-token')
-  // getCsrfToken(@Req() req: Request, @Res() res: Response) {
-  //   res.json({ csrfToken: req.csrfToken() });
-  // }
 
   @Post('/register')
   async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
@@ -30,7 +26,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(@Req() req: Request, @Res() res: Response) {
+  async login(@Req() req: Request, @Res() res: Response){
     const loginDto: LoginDto = req.body;
     
     if (!loginDto.username || !loginDto.password) {
@@ -40,9 +36,6 @@ export class AuthController {
     try {
       const { accessToken, refreshToken } = await this.authService.login(loginDto);
 
-      // Gửi accessToken trong body response
-      res.json({ accessToken, refreshToken }); // Đảm bảo trả về cả hai token
-
       // Đặt refreshToken vào cookie với các thuộc tính bảo mật
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -50,6 +43,10 @@ export class AuthController {
         sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
       });
+
+      // Gửi accessToken trong body response
+      res.json({ accessToken, refreshToken }); // Đảm bảo trả về cả hai token
+
     } catch (error) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
@@ -58,7 +55,6 @@ export class AuthController {
   @Post('/refresh')
 async refreshTokens(@Req() req: Request, @Res() res: Response) {
   const refreshToken = req.cookies['refreshToken'];
-
 
   if (!refreshToken) {
     return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Refresh token is required' });
@@ -79,12 +75,15 @@ async refreshTokens(@Req() req: Request, @Res() res: Response) {
     return res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
     console.error('Error during refreshTokens:', error);
+    
     // Đảm bảo rằng chỉ gọi một lần
     if (!res.headersSent) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid or expired refresh token' });
+      // Gửi phản hồi lỗi dựa trên lỗi từ service
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: error.message || 'Invalid or expired refresh token' });
     }
   }
 }
+
 
 
   @Post('/logout')
@@ -113,7 +112,6 @@ async refreshTokens(@Req() req: Request, @Res() res: Response) {
     } catch (error) {
       throw new HttpException('Logout failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     
   }
 }
