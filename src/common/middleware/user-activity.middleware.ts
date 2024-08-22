@@ -1,10 +1,11 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NestMiddleware, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '../../config/config.service';
 import { BlacklistService } from '../../redis/blacklist.service';
 import { JwtPayload } from '../../token/interfaces/jwt-payload.interface';
+import { JwtAuthGuard } from '../../token/jwt-auth.guard';
 
 @Injectable()
 export class UserActivityMiddleware implements NestMiddleware {
@@ -13,8 +14,10 @@ export class UserActivityMiddleware implements NestMiddleware {
     private readonly jwtService: JwtService,
     private readonly blacklistService: BlacklistService,
     private readonly configService: ConfigService,
+    
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   async use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
@@ -29,9 +32,6 @@ export class UserActivityMiddleware implements NestMiddleware {
 
         // Tìm user dựa trên payload
         const user = await this.usersService.findByUsername(payload.username);
-        if (!user) {
-          throw new UnauthorizedException('User không tồn tại');
-        }
 
         // Gán user vào request để sử dụng trong các handler khác
         req.user = user;

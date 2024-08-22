@@ -10,6 +10,8 @@ import { RedisModule } from './redis/redis.module';
 import { TokenModule } from './token/token.module';
 import { UserActivityMiddleware } from './common/middleware/user-activity.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './token/jwt.strategy';
+import { JwtAuthGuard } from './token/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { JwtModule } from '@nestjs/jwt';
     ProfileModule,
     ArticlesModule,
   ],
+  providers: [JwtStrategy, JwtAuthGuard],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
