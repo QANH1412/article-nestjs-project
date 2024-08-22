@@ -16,12 +16,12 @@ export class UserActivityMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    try {
-      const authHeader = req.headers.authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
+    const authHeader = req.headers.authorization;
 
-        
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+
+      try {
         // Giải mã token để lấy payload
         const payload = this.jwtService.verify<JwtPayload>(token, {
           secret: this.configService.jwtSecret,
@@ -35,14 +35,13 @@ export class UserActivityMiddleware implements NestMiddleware {
 
         // Gán user vào request để sử dụng trong các handler khác
         req.user = user;
-
+        // console.log(user);
+        
         // Cập nhật thời gian hoạt động cuối cùng
         await this.usersService.updateLastActivity(user.username);
+      } catch (error) {
+        
       }
-    } catch (error) {
-      console.log('Error in UserActivityMiddleware:', error.message);
-      // Nếu cần, bạn có thể throw lỗi ở đây để ngăn chặn request tiếp tục
-      // throw new UnauthorizedException('Unauthorized request');
     }
 
     next();

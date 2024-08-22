@@ -34,6 +34,12 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(UserActivityMiddleware)
+      .exclude(
+        '/auth/login',
+        '/auth/register',
+        '/auth/refresh',
+      ) // Loại trừ các route khỏi middleware
       .forRoutes('*'); // Áp dụng middleware cho tất cả các routes
+      
   }
 }
