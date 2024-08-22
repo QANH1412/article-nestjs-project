@@ -8,14 +8,12 @@ import { ProfileModule } from './profile/profile.module';
 import { ArticlesModule } from './articles/articles.module';
 import { RedisModule } from './redis/redis.module';
 import { TokenModule } from './token/token.module';
-import { UserActivityMiddleware } from './common/middleware/user-activity.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './token/jwt.strategy';
 import { JwtAuthGuard } from './token/jwt-auth.guard';
 
 @Module({
-  imports: [
-    ConfigModule,  
+  imports: [ 
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -23,7 +21,14 @@ import { JwtAuthGuard } from './token/jwt-auth.guard';
       }),
       inject: [ConfigService],
     }),
-    JwtModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.jwtSecret, // Sử dụng secret cho access token từ ConfigService
+      }),
+      inject: [ConfigService],
+    }),
+    ConfigModule, 
     TokenModule,
     RedisModule,
     UsersModule,
@@ -33,16 +38,5 @@ import { JwtAuthGuard } from './token/jwt-auth.guard';
   ],
   providers: [JwtStrategy, JwtAuthGuard],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UserActivityMiddleware)
-      .exclude(
-        '/auth/login',
-        '/auth/register',
-        '/auth/refresh',
-      ) // Loại trừ các route khỏi middleware
-      .forRoutes('*'); // Áp dụng middleware cho tất cả các routes
-      
-  }
+export class AppModule {
 }

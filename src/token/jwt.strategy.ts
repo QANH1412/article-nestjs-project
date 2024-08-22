@@ -43,16 +43,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException('User không tồn tại');
     }
+    await this.usersService.updateLastActivity(user.username); 
+    //  ********************** code này để test mà thôi *************** //
+    // // Kiểm tra thời gian hoạt động cuối cùng của người dùng
+    //   const currentTime = new Date();
+    //   const lastActivity = new Date(user.lastActivity);
+    //   const idleTime = (currentTime.getTime() - lastActivity.getTime()) / 1000; // Thời gian idle tính bằng giây
 
-    // Kiểm tra thời gian hoạt động cuối cùng của người dùng
-      const currentTime = new Date();
-      const lastActivity = new Date(user.lastActivity);
-      const idleTime = (currentTime.getTime() - lastActivity.getTime()) / 1000; // Thời gian idle tính bằng giây
-
-      // Nếu idle time vượt quá thời gian quy định (ví dụ: 5 ngày)
-      if (idleTime > 5 * 24 * 60 * 60) { // 5 ngày tính bằng giây
-        throw new UnauthorizedException('Session expired, please log in again');
-      }
+    //   // Nếu idle time vượt quá thời gian quy định (ví dụ: 5 ngày)
+    //   if (idleTime > 5 * 24 * 60 * 60) { // 5 ngày tính bằng giây
+    //     throw new UnauthorizedException('Session expired, please log in again');
+    //   }
 
     return user;
   }
