@@ -9,6 +9,7 @@ import { ArticlesModule } from './articles/articles.module';
 import { RedisModule } from './redis/redis.module';
 import { TokenModule } from './token/token.module';
 import { UserActivityMiddleware } from './common/middleware/user-activity.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserActivityMiddleware } from './common/middleware/user-activity.middle
       }),
       inject: [ConfigService],
     }),
+    JwtModule,
     TokenModule,
     RedisModule,
     UsersModule,
