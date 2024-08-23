@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './token/jwt.strategy';
 import { JwtAuthGuard } from './token/jwt-auth.guard';
 import { MailModule } from './mail/mail.module';
+import { UpdateLastActivityMiddleware } from './common/middleware/update-user-activity.middleware';
 
 @Module({
   imports: [ 
@@ -41,4 +42,9 @@ import { MailModule } from './mail/mail.module';
   providers: [JwtStrategy, JwtAuthGuard],
 })
 export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UpdateLastActivityMiddleware)
+      .forRoutes('*'); // Áp dụng cho tất cả các route
+  }
 }
