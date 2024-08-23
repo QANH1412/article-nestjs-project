@@ -16,4 +16,12 @@ export class ConfigService {
   get jwtRefreshSecret(): string {
     return this.configService.get<string>('JWT_REFRESH_SECRET');
   }
+
+  get emailUser(): string {
+    return this.configService.get<string>('EMAIL_USER');
+  }
+
+  get emailPass(): string {
+    return this.configService.get<string>('EMAIL_PASSWORD');
+  }
 }

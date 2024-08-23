@@ -11,6 +11,7 @@ import { TokenModule } from './token/token.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './token/jwt.strategy';
 import { JwtAuthGuard } from './token/jwt-auth.guard';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [ 
@@ -28,6 +29,7 @@ import { JwtAuthGuard } from './token/jwt-auth.guard';
       }),
       inject: [ConfigService],
     }),
+    MailModule,
     ConfigModule, 
     TokenModule,
     RedisModule,

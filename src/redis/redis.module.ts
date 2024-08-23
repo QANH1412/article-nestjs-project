@@ -8,16 +8,12 @@ import { BlacklistService } from './blacklist.service';
     {
       provide: 'REDIS_CLIENT',
       useFactory: () => {
-        const redis = new Redis({
-          host: 'localhost',
-          port: 6379,
-          // Các tùy chọn khác nếu cần
-        });
+        const redis = new Redis(process.env.REDIS_URL);
         redis.on('error', (err) => console.error('Redis Client Error', err));
         return redis;
       },
     },
-    BlacklistService
+    BlacklistService,
   ],
   exports: ['REDIS_CLIENT', BlacklistService],
 })

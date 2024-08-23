@@ -7,10 +7,15 @@ services:
       - "3000:3000"
     depends_on:
       - mongodb
+      - redis
     environment:
       MONGODB_URI: mongodb://mongodb:27017/article-management
+      REDIS_URL: redis://redis:6379
     networks:
       - app-network
+    volumes:
+      - ./src:/usr/src/app/src  # Mount thư mục mã nguồn vào container
+      - /usr/src/app/node_modules  # Đảm bảo thư mục node_modules không bị ghi đè
 
   mongodb:
     image: mongo:latest
@@ -19,6 +24,14 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - app-network
 

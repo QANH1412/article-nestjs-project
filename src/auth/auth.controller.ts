@@ -6,6 +6,9 @@ import { RefreshTokenDto } from '../token/dto/refresh-token.dto';
 import { RefreshTokenService } from '../token/refresh-token.service';
 import { Get, Body, Controller, Post, Req, Res, HttpException, HttpStatus, Headers } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { RegisterDto } from './dto/register.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { RequestResetPasswordDto } from './dto/request-reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,9 +19,9 @@ export class AuthController {
 
 
   @Post('/register')
-  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async register(@Body() RegisterDto: RegisterDto, @Res() res: Response) {
     try {
-      await this.authService.register(createUserDto);
+      await this.authService.register(RegisterDto);
       res.status(HttpStatus.CREATED).json({ message: 'User registered successfully. Please check your email to verify your account.' });
     } catch (error) {
       throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
@@ -26,9 +29,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(@Req() req: Request, @Res() res: Response){
-    const loginDto: LoginDto = req.body;
-    
+  async login(@Body() loginDto: LoginDto, @Res() res: Response){
     if (!loginDto.username || !loginDto.password) {
       throw new HttpException('Username and password are required', HttpStatus.BAD_REQUEST);
     }
@@ -112,6 +113,25 @@ async refreshTokens(@Req() req: Request, @Res() res: Response) {
     } catch (error) {
       throw new HttpException('Logout failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+  }
+
+  @Post('/request-reset')
+  async requestPasswordReset(@Body() requestResetDto: RequestResetPasswordDto, @Res() res: Response): Promise<void> {
+    try {
+      await this.authService.requestPasswordReset(requestResetDto);
+      res.status(HttpStatus.CREATED).json({ message: 'Please check your email to change your password.' });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('/reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res() res: Response): Promise<void> {
+    try {
+      await this.authService.resetPassword(resetPasswordDto);
+      res.status(HttpStatus.CREATED).json({ message: 'You have reset your password. Please log in again' });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

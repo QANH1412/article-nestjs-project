@@ -1,8 +1,9 @@
 // src/profile/profile.controller.ts
-import { Controller, Get, Req, UseGuards, Post, HttpException, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Body, Get, Req, UseGuards, Post, HttpException, HttpStatus, Res } from '@nestjs/common';
 import { JwtAuthGuard } from '../token/jwt-auth.guard';
 import { ProfileService } from './profile.service';
 import { Request, Response } from 'express';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 
 @Controller('profile')
@@ -13,7 +14,23 @@ export class ProfileController {
   @Get()
   async getProfile(@Req() request: Request) {
     const user = request.user as any;
-    return this.profileService.findById(user._id); // sử dụng user.username nếu không có _id
+    return this.profileService.findById(user._id); 
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/change-password')
+  async changePassword(
+    @Req() request: Request,
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Res() res: Response
+  ) {
+    const user = request.user as any;
+    try {
+      await this.profileService.changePassword(user.username, changePasswordDto);
+      res.status(HttpStatus.OK).json({ message: 'Password changed successfully' });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @UseGuards(JwtAuthGuard)

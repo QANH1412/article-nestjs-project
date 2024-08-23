@@ -6,7 +6,8 @@ import {
   IsMongoId,
   IsPhoneNumber,
   IsBoolean,
-  IsEmail
+  IsEmail,
+  Length
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Types } from 'mongoose';
@@ -19,6 +20,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
+  @Length(6, 20, { message: 'password must be between 6 and 20 characters long' })
   readonly password: string;
 
   @IsEmail()

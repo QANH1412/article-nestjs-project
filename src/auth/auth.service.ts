@@ -7,6 +7,8 @@ import * as bcrypt from 'bcryptjs';
 import { TokenService } from '../token/token.service';
 import { BlacklistService } from '../redis/blacklist.service';
 import { MailService } from '../mail/mail.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { RequestResetPasswordDto } from './dto/request-reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -59,4 +61,40 @@ export class AuthService {
     await this.blacklistService.addToBlacklist(accessToken, accessTokenExpiresIn);
     await this.blacklistService.addToBlacklist(refreshToken, refreshTokenExpiresIn);
   }
+
+  async requestPasswordReset(requestResetDto: RequestResetPasswordDto): Promise<void> {
+    const user = await this.usersService.findByEmail(requestResetDto.email);
+    if (!user) {
+      throw new UnauthorizedException('No user found with this email');
+    }
+
+    const resetToken = this.tokenService.createPasswordResetToken(requestResetDto.email);
+    await this.mailService.sendPasswordResetEmail(requestResetDto.email, resetToken);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+    if (resetPasswordDto.newPassword !== resetPasswordDto.confirmPassword) {
+      throw new UnauthorizedException('Passwords do not match');
+    }
+
+    // Kiểm tra xem token có bị blacklist không
+    const isBlacklisted = await this.blacklistService.isBlacklisted(resetPasswordDto.resetPasswordToken);
+    if (isBlacklisted) {
+      throw new UnauthorizedException('Token has been invalidated');
+    }
+
+    const { email } = this.tokenService.verifyPasswordResetToken(resetPasswordDto.resetPasswordToken);
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+
+    const hashedPassword = await bcrypt.hash(resetPasswordDto.newPassword, 10);
+    await this.usersService.update(email, { password: hashedPassword });
+
+    // bỏ token vào blacklist
+    const resetTokenExpiresIn = 60 * 60; // 15 minutes
+    await this.blacklistService.addToBlacklist(resetPasswordDto.resetPasswordToken, resetTokenExpiresIn);
+  }
+
 }

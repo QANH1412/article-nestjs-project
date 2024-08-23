@@ -35,4 +35,15 @@ export class TokenService {
   verifyEmailVerificationToken(token: string): { email: string } {
     return this.jwtService.verify(token, { secret: this.configService.jwtSecret }) as { email: string };
   }
+
+  createPasswordResetToken(email: string): string {
+    return this.jwtService.sign({ email }, {
+      secret: this.configService.jwtSecret,
+      expiresIn: '1h',
+    });
+  }
+  
+  verifyPasswordResetToken(token: string): { email: string } {
+    return this.jwtService.verify(token, { secret: this.configService.jwtSecret }) as { email: string };
+  }
 }
