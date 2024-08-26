@@ -13,6 +13,7 @@ import { JwtStrategy } from './token/jwt.strategy';
 import { JwtAuthGuard } from './token/jwt-auth.guard';
 import { MailModule } from './mail/mail.module';
 import { UpdateLastActivityMiddleware } from './common/middleware/update-user-activity.middleware';
+import { GoogleModule } from './google/google.module';
 
 @Module({
   imports: [ 
@@ -30,6 +31,7 @@ import { UpdateLastActivityMiddleware } from './common/middleware/update-user-ac
       }),
       inject: [ConfigService],
     }),
+    GoogleModule,
     MailModule,
     ConfigModule, 
     TokenModule,

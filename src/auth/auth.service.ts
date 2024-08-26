@@ -54,6 +54,13 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  public async oAuth2CreateTokens(username: string): Promise<{ accessToken: string; refreshToken: string }> {
+    // Create tokens
+    const accessToken = this.tokenService.createAccessToken(username);
+    const refreshToken = this.tokenService.createRefreshToken(username);
+    return { accessToken, refreshToken };
+  }
+
   async logout(accessToken: string, refreshToken: string): Promise<void> {
     const accessTokenExpiresIn = 15 * 60; // 15 minutes
     const refreshTokenExpiresIn = 7 * 24 * 60 * 60; // 7 days

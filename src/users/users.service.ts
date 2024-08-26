@@ -4,6 +4,7 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
+import { CreateOauth2UserDto } from './dto/create-Oauth2-user.dto';
 
 
 @Injectable()
@@ -12,6 +13,10 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     return this.userRepository.create(createUserDto);
+  }
+
+  async createOauth2(createOauth2UserDto: CreateOauth2UserDto): Promise<User> {
+    return this.userRepository.createOauth2(createOauth2UserDto);
   }
 
   async findByUsername(username: string): Promise<User | null> {

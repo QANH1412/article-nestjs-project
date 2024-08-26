@@ -23,7 +23,6 @@ export class RefreshTokenService {
    
     // Kiểm tra xem refresh token có bị blacklist không
     const isBlacklisted = await this.blacklistService.isBlacklisted(refreshToken);
-    
     if (isBlacklisted) {
       throw new UnauthorizedException('Refresh token is blacklisted');
     }

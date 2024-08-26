@@ -6,12 +6,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { User, UserDocument } from './schemas/user.schema';
+import { CreateOauth2UserDto } from './dto/create-Oauth2-user.dto';
 
 @Injectable()
 export class UsersRepository implements IUserRepository {
   constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
 
   async create(userData: CreateUserDto): Promise<User> {
+    const user = new this.userModel(userData);
+    return user.save();
+  }
+
+  async createOauth2(userData: CreateOauth2UserDto): Promise<User> {
     const user = new this.userModel(userData);
     return user.save();
   }

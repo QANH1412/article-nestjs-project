@@ -11,6 +11,7 @@ import { MailModule } from '../mail/mail.module';
 import { VerifyEmailController } from './verify-email.controller';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
+import { GoogleModule } from 'src/google/google.module';
 
 @Module({
   imports: [

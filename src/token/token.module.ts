@@ -5,6 +5,8 @@ import { RefreshTokenService } from './refresh-token.service';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
+import { JwtStrategy } from './jwt.strategy';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { ConfigService } from '../config/config.service';
     }),
     UsersModule,
   ],
-  providers: [TokenService, RefreshTokenService],
+  providers: [TokenService, RefreshTokenService, JwtStrategy, JwtAuthGuard],
   exports: [TokenService, RefreshTokenService], // Export để sử dụng ở các module khác
 })
 export class TokenModule {}

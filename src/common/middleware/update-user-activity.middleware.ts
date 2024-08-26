@@ -1,10 +1,9 @@
-// src/auth/middleware/update-last-activity.middleware.ts
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/users.service';
 import { BlacklistService } from 'src/redis/blacklist.service';
-
+import { ExtractJwt } from 'passport-jwt';
 
 @Injectable()
 export class UpdateLastActivityMiddleware implements NestMiddleware {
@@ -15,25 +14,23 @@ export class UpdateLastActivityMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
+    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
-    if (authHeader) {
-      const token = authHeader.split(' ')[1];
-
+    if (token) {
       // Kiểm tra xem token có bị blacklist không
       const isBlacklisted = await this.blacklistService.isBlacklisted(token);
+
       if (!isBlacklisted) {
         try {
-          // Xác thực token và kiểm tra hạn
+          // Xác thực token và kiểm tra payload
           const payload = this.jwtService.verify(token);
 
-          // Nếu token hợp lệ, cập nhật lastActivity
-          if (payload && payload.username) {
+          if (payload?.username) {
+            // Cập nhật lastActivity nếu payload hợp lệ
             await this.usersService.updateLastActivity(payload.username);
           }
-        } catch (error) {
-          // Token không hợp lệ hoặc hết hạn
-          // Không cần thực hiện hành động gì thêm nếu token không hợp lệ
+        } catch {
+          // Token không hợp lệ hoặc hết hạn, không cần hành động gì thêm
         }
       }
     }
