@@ -14,6 +14,7 @@ import { JwtAuthGuard } from './token/jwt-auth.guard';
 import { MailModule } from './mail/mail.module';
 import { UpdateLastActivityMiddleware } from './common/middleware/update-user-activity.middleware';
 import { GoogleModule } from './google/google.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [ 
@@ -36,6 +37,7 @@ import { GoogleModule } from './google/google.module';
     ConfigModule, 
     TokenModule,
     RedisModule,
+    RolesModule,
     UsersModule,
     AuthModule,
     ProfileModule,

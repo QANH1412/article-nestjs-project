@@ -6,6 +6,8 @@ import { TokenService } from '../token/token.service';
 import { MailService } from '../mail/mail.service';
 import * as bcrypt from 'bcryptjs';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfileService {
@@ -48,5 +50,14 @@ export class ProfileService {
 
     const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
     await this.usersService.update(user.email, { password: hashedNewPassword });
+  }
+
+  async updateProfile(userEmail: string, updateProfileDto: UpdateProfileDto) {
+    // Call UsersService to update user profile
+    const updatedUser = await this.usersService.update(userEmail, updateProfileDto);
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${userEmail} not found`);
+    }
+    return updatedUser;
   }
 }

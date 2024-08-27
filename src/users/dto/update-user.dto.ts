@@ -47,9 +47,4 @@ export class UpdateUserDto {
   @IsOptional()
   lastActivity?: Date;
   
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ResetPasswordTokenDto)
-  @IsOptional()
-  readonly resetPasswordToken?: ResetPasswordTokenDto[];
 }

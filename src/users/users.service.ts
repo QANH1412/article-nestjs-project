@@ -5,18 +5,58 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
 import { CreateOauth2UserDto } from './dto/create-Oauth2-user.dto';
+import { RolesService } from 'src/roles/roles.service';
+import { Types } from 'mongoose';
 
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UsersRepository) {}
+  constructor(
+    private readonly userRepository: UsersRepository,
+    private readonly rolesService: RolesService
+  ) {}
 
+  
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return this.userRepository.create(createUserDto);
+    const defaultRole = await this.rolesService.findByName('user');
+    if (!defaultRole) {
+      throw new ConflictException('Default role "user" not found');
+    }
+
+    const userDto: CreateUserDto = {
+      ...createUserDto,
+      roleId: defaultRole._id as Types.ObjectId // Convert to Types.ObjectId
+    };
+
+    return this.userRepository.create(userDto);
+  }
+
+  async createAdmin(createUserDto: CreateUserDto): Promise<User> {
+    const adminRole = await this.rolesService.findByName('admin');
+    if (!adminRole) {
+      throw new ConflictException('Role "admin" not found');
+    }
+
+    const userDto: CreateUserDto = {
+      ...createUserDto,
+      roleId: adminRole._id as Types.ObjectId // Convert to Types.ObjectId
+    };
+
+    return this.userRepository.create(userDto);
   }
 
   async createOauth2(createOauth2UserDto: CreateOauth2UserDto): Promise<User> {
-    return this.userRepository.createOauth2(createOauth2UserDto);
+    const defaultRole = await this.rolesService.findByName('user');
+    if (!defaultRole) {
+      throw new ConflictException('Default role "user" not found');
+    }
+
+    const userDto: CreateOauth2UserDto = {
+      ...createOauth2UserDto,
+      roleId: defaultRole._id as Types.ObjectId // Convert to Types.ObjectId
+    };
+
+    return this.userRepository.createOauth2(userDto);
   }
 
   async findByUsername(username: string): Promise<User | null> {
