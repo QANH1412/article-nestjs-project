@@ -5,7 +5,10 @@ import { ProfileService } from './profile.service';
 import { Request, Response } from 'express';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Profile') // Thêm tag cho controller
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
@@ -49,12 +52,12 @@ export class ProfileController {
   @Put('/update')
   async updateProfile(
     @Req() request: Request,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateProfileDto: UpdateProfileDto,
     @Res() res: Response
   ) {
     const user = request.user as any;
     try {
-      const updatedUser = await this.profileService.updateProfile(user.email, updateUserDto);
+      const updatedUser = await this.profileService.updateProfile(user.email, updateProfileDto);
       res.status(HttpStatus.OK).json(updatedUser);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

@@ -6,17 +6,22 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../token/jwt-auth.guard';
 import { use } from 'passport';
 import { User } from './schemas/user.schema';
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('Users') // Thêm tag cho controller
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
+
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
-  
+  @Post('/admin')
+  async createAdmin(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.createAdmin(createUserDto);
+  }
 
   @Put(':email')
   async update(
@@ -27,14 +32,9 @@ export class UsersController {
   }
 
 
-
-
-
-
-
-
-
 }  
+
+
 //   @UseGuards(JwtAuthGuard)
 //   @Post()
 //   async create(@Body() createUserDto: CreateUserDto) {

@@ -11,7 +11,9 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RequestResetPasswordDto } from './dto/request-reset-password.dto';
 import { ExtractJwt } from 'passport-jwt';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth') // Thêm tag cho controller
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -136,6 +138,8 @@ async refreshTokens(@Req() req: Request, @Res() res: Response) {
     }
   }
 
+
+  ///////////////////////////// login oAuth2 //////////////////////////////
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   async googleLogin(@Req() req: Request) {

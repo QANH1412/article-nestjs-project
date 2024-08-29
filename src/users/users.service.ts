@@ -7,7 +7,7 @@ import { User } from './schemas/user.schema';
 import { CreateOauth2UserDto } from './dto/create-Oauth2-user.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { Types } from 'mongoose';
-
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -37,8 +37,21 @@ export class UsersService {
       throw new ConflictException('Role "admin" not found');
     }
 
+    const existingUser = await this.findByUsername(createUserDto.username);
+    if (existingUser) {
+      throw new ConflictException('Username already exists');
+    }
+
+    const existingUserEmail = await this.findByEmail(createUserDto.email);
+    if (existingUserEmail) {
+      throw new ConflictException('Email already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
     const userDto: CreateUserDto = {
       ...createUserDto,
+      password: hashedPassword,
       roleId: adminRole._id as Types.ObjectId // Convert to Types.ObjectId
     };
 

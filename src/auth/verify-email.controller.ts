@@ -4,7 +4,9 @@ import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { TokenService } from '../token/token.service';
 import { UsersService } from '../users/users.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth') // Thêm tag cho controller
 @Controller('auth')
 export class VerifyEmailController {
   constructor(

@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import * as csurf from 'csurf';
 import * as cookieParser from 'cookie-parser';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,18 +28,7 @@ async function bootstrap() {
     }),
   );
 
-  // // Cấu hình CSRF middleware
-  // app.use(
-  //   csurf({
-  //     cookie: {
-  //       httpOnly: true, // Đảm bảo cookie chỉ có thể truy cập qua HTTP
-  //       secure: false, // Chỉ sử dụng cookie bảo mật trên production
-  //     },
-  //   }),
-  // );
-
-  
-  
+   
   // Cấu hình CORS để bảo vệ ứng dụng khỏi các yêu cầu từ các origin không mong muốn
   app.enableCors({
     origin: ['http://localhost:3000'], // Chỉ định các origin được phép
@@ -46,6 +36,17 @@ async function bootstrap() {
     credentials: true, // Cho phép gửi cookie cùng với yêu cầu
   });
 
+  // Cấu hình Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Your API Title')
+    .setDescription('API documentation for your project')
+    .setVersion('1.0')
+    .addBearerAuth() // Thêm Bearer Token auth nếu cần
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+  
   // Lắng nghe trên cổng 3000
   await app.listen(3000);
 }

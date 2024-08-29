@@ -15,6 +15,8 @@ import { MailModule } from './mail/mail.module';
 import { UpdateLastActivityMiddleware } from './common/middleware/update-user-activity.middleware';
 import { GoogleModule } from './google/google.module';
 import { RolesModule } from './roles/roles.module';
+import { PermissionsGuard } from './auth/guards/permissions.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [ 
@@ -43,7 +45,7 @@ import { RolesModule } from './roles/roles.module';
     ProfileModule,
     ArticlesModule,
   ],
-  providers: [JwtStrategy, JwtAuthGuard],
+  providers: [JwtStrategy, JwtAuthGuard, PermissionsGuard, RolesGuard],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
