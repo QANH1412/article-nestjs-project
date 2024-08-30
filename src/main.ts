@@ -13,6 +13,7 @@ async function bootstrap() {
   // Cấu hình cookie-parser
   app.use(cookieParser());
 
+  
   // Sử dụng ValidationPipe để tự động xác thực dữ liệu đầu vào
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
@@ -46,6 +47,16 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+  
+  // Cấu hình middleware csurf
+  app.use(csurf({
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Chỉ bật khi chạy trong môi trường sản xuất
+      sameSite: 'strict',
+    },
+    value: (req) => req.cookies['csrfToken'], // Đặt tên token CSRF
+  }));
   
   // Lắng nghe trên cổng 3000
   await app.listen(3000);

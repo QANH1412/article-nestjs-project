@@ -12,6 +12,7 @@ import { RequestResetPasswordDto } from './dto/request-reset-password.dto';
 import { ExtractJwt } from 'passport-jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import * as csurf from 'csurf';
 
 @ApiTags('Auth') // Thêm tag cho controller
 @Controller('auth')
@@ -21,6 +22,8 @@ export class AuthController {
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
+
+  
 //////////////////////////////////// Register /////////////////////////////////////////
   @Post('/register')
   async register(@Body() RegisterDto: RegisterDto, @Res() res: Response) {
@@ -34,11 +37,13 @@ export class AuthController {
 
   ///////////////////////////// Login //////////////////////////////////////
   @Post('/login')
-  async login(@Body() loginDto: LoginDto, @Res() res: Response){
+  async login(@Body() loginDto: LoginDto, @Res() res: Response, @Req() req: Request){
+    
     if (!loginDto.username || !loginDto.password) {
       throw new HttpException('Username and password are required', HttpStatus.BAD_REQUEST);
     }
 
+    
     try {
       const { accessToken, refreshToken } = await this.authService.login(loginDto);
 
@@ -157,4 +162,16 @@ async refreshTokens(@Req() req: Request, @Res() res: Response) {
     res.json({ accessToken, refreshToken });  
   }
   
+  @Get('/get')
+  getCsrfToken(@Req() req: Request, @Res() res: Response) {
+    // `req.csrfToken()` sẽ trả về giá trị CSRF token
+    const csrfToken = req.csrfToken();
+    // Đặt CSRF token vào cookie
+    res.cookie('csrfToken', csrfToken, {
+      httpOnly: false, // Đặt `httpOnly` là false để client-side có thể truy cập token này
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    res.json({ csrfToken });
+  }
 }

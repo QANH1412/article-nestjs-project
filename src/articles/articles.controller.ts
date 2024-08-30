@@ -21,9 +21,9 @@ export class ArticlesController {
     return this.articleService.create(createArticleDto);
   }
 
-  @Roles('admin')
-  @Permissions('view_update')
-  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  // @Roles('admin')
+  // @Permissions('view_update')
+  // @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Get()
   async findAll(@Query('search') search?: string) {
   return this.articleService.findAll(search);
