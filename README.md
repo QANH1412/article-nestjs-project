@@ -19,17 +19,17 @@ Install dependencies:
 npm install
 ```
 
-## Running the Application
-Start the application using the following command:
-```sh
-npm run start
-```
-This will launch the application in development mode.
-
 ## Environment Configuration
-Create a `.env` file in the root directory and add the following content:
+Before running the application, create a `.env` file in the root directory and add the following content:
 ```env
 BASE_URL=....
 ```
 Replace `....` with the actual base URL of your Laravel API.
+
+## Running the Application
+After setting up the `.env` file, start the application using the following command:
+```sh
+npm run start
+```
+This will launch the application in development mode.
 
