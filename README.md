@@ -1,73 +1,147 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Deployment Guideline for Heucard Laravel Project
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
+## 1. Download Source Code
+Clone the repository or download the ZIP file:
 ```bash
-$ npm install
+git clone <repository-url>
+cd <project-directory>
 ```
 
-## Running the app
-
+## 2. Configure Environment Variables
+Copy the example `.env` file:
 ```bash
-# development
-$ npm run start
+cp .env.example .env
+```
+Open `.env` and update the required configurations:
+```env
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=your_database_name
+DB_USERNAME=root
+DB_PASSWORD=your_password
 ```
 
-## Test
+## 3. Verify Docker Configuration
+Ensure the `docker-compose.yml` file contains the correct settings:
+```yaml
+services:
+    app:
+        build:
+            context: ./docker/php
+        container_name: heucard_app
+        volumes:
+            - ./:/var/www
+        working_dir: /var/www
+        environment:
+            - APP_ENV=local
+            - APP_DEBUG=true
+            - DB_CONNECTION=${DB_CONNECTION}
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+        depends_on:
+            - mysql
+        ports:
+            - "9000:9000"
 
-```bash
-# unit tests
-$ npm run test
+    mysql:
+        image: mysql:8.0
+        container_name: heucard_mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+        volumes:
+            - mysql_data:/var/lib/mysql
+        ports:
+            - "3307:3306"
 
-# e2e tests
-$ npm run test:e2e
+    nginx:
+        image: nginx:latest
+        container_name: heucard_nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./certbot/conf:/etc/letsencrypt
+            - ./certbot/www:/var/www/certbot
+        depends_on:
+            - app
 
-# test coverage
-$ npm run test:cov
+    certbot:
+        image: certbot/certbot
+        container_name: heucard_certbot
+        volumes:
+            - ./certbot/conf:/etc/letsencrypt
+            - ./certbot/www:/var/www/certbot
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done'"
+
+volumes:
+    mysql_data:
 ```
 
-## Support
+## 4. Build and Start Containers
+Run the following commands:
+```bash
+docker compose build
+docker compose up -d
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 5. Verify MySQL Connection
+- Open MySQL Workbench.
+- Connect with `DB_USERNAME` and `DB_PASSWORD`.
+- Use port `3307`.
+- Check if the database `DB_DATABASE` exists. If not, create it manually.
 
-## Stay in touch
+## 6. Access Application Container
+```bash
+docker exec -it heucard_app bash
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 7. Generate Application Key
+Inside the container, run:
+```bash
+php artisan key:generate
+```
+Check the `.env` file to ensure `APP_KEY` has been set.
 
-## License
+## 8. Run Database Migrations
+```bash
+php artisan migrate
+```
+Verify the database tables in MySQL Workbench.
 
-Nest is [MIT licensed](LICENSE).
+## 9. Generate OAuth Keys for Passport
+```bash
+php artisan passport:client --personal
+```
+- Set the client name as `HeuToken`.
+- Refresh the database and verify `oauth_personal_access_clients` and `oauth_clients` tables.
+
+Generate passport keys:
+```bash
+php artisan passport:keys
+```
+Check the `/storage` folder for `oauth-private.key` and `oauth-public.key`. Copy their content into `.env`:
+```env
+PASSPORT_PRIVATE_KEY="..."
+PASSPORT_PUBLIC_KEY="..."
+```
+
+## 10. Start Laravel Server
+```bash
+php artisan serve
+```
+The PHP server is now running successfully.
+
