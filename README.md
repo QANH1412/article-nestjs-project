@@ -1,35 +1,35 @@
-# Deployment Guideline for Heucard-Admin
+# 🧩 NestJS Authentication Learning Project
+---
 
-This document provides instructions on how to set up and deploy the **heucard-admin** project.
+A backend API built with **NestJS** and **TypeScript**, created as a personal learning project to explore **authentication** and **authorization** concepts.
 
-## Prerequisites
-Ensure you have the following installed on your system:
-- [Node.js](https://nodejs.org/) (LTS version recommended)
-- [npm](https://www.npmjs.com/) (comes with Node.js)
+This project includes implementations of:
+- 🔑 User registration and login  
+- 🔐 JWT authentication with refresh tokens  
+- 🌐 Google OAuth2 integration  
+- 👥 Basic role-based authorization  
+- 🧰 Swagger API documentation setup  
 
-## Installation
-Clone the repository and navigate to the project folder:
-```sh
-git clone <repository_url>
-cd heucard-admin
-```
+The main focus was to understand **NestJS modular structure**, **middleware**, and **security practices** such as CSRF protection, OAuth, and JWT lifecycle management.
 
-Install dependencies:
-```sh
-npm install
-```
+---
 
-## Environment Configuration
-Before running the application, create a `.env` file in the root directory and add the following content:
-```env
-BASE_URL=....
-```
-Replace `....` with the actual base URL of your Laravel API.
+## ⚙️ Tech Stack
+| Layer | Technology |
+|-------|-------------|
+| **Framework** | NestJS (TypeScript) |
+| **Auth** | JWT, Google OAuth2 |
+| **Docs** | Swagger |
+| **Database** | Not implemented (learning focus: Auth system only) |
 
-## Running the Application
-After setting up the `.env` file, start the application using the following command:
-```sh
-npm run start
-```
-This will launch the application in development mode.
+---
 
+## 📚 Status
+🟡 **Archived Project** — built as a learning exercise in August 2024.  
+This repository is no longer under active development but remains public as a reference for future NestJS or authentication projects.
+
+---
+
+## 👤 Developer
+**Anh Vo Quoc** — [@QANH1412](https://github.com/QANH1412)  
+📩 Email: **voquocanh.work@gmail.com**
